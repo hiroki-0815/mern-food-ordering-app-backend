@@ -6,6 +6,8 @@ import myUserRoute from "./routes/MyUserRoute";
 import {v2 as cloudinary} from "cloudinary"
 import myRestaurantRoute from "./routes/MyRestaurantRoute"
 import restaurantRoute from "./routes/RestaurantRoute"
+import orderRoute from "./routes/OrderRoute"
+
 
 const PORT = process.env.PORT || 7001;
 
@@ -30,6 +32,7 @@ app.get("/health", async (req: Request, res: Response) => {
 app.use("/api/my/user", myUserRoute);
 app.use("/api/my/restaurant", myRestaurantRoute)
 app.use("/api/restaurant", restaurantRoute)
+app.use("/api/order", orderRoute)
 
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
