@@ -21,6 +21,13 @@ type CheckoutSessionRequest ={
   restaurantId: string;
 }
 
+export const stripeWebhookHandler: RequestHandler = async(req: Request, res: Response) =>{
+  console.log("RECEIVED EVENT");
+  console.log("==============");
+  console.log("event", req.body);
+  res.send();
+}
+
 export const createCheckoutSession: RequestHandler = async(req: Request, res: Response): Promise<void>=>{
   try {
     const checkoutSessionRequest: CheckoutSessionRequest = req.body;
