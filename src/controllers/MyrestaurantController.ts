@@ -2,6 +2,7 @@ import {Request, RequestHandler, Response} from "express"
 import Restaurant from "../models/restaurant";
 import cloudinary from "cloudinary"
 import mongoose from "mongoose";
+import Order from "../models/ordermodel";
 
 export const getMyRestaurant: RequestHandler = async (req: Request, res: Response) =>{
   try {
@@ -78,6 +79,54 @@ export const updateMyRestaurant: RequestHandler = async(req: Request, res: Respo
   } catch (error) {
     console.log(error);
     res.status(500).json({message: "Error updating restaurant"})
+  }
+}
+
+export const getMyRestaurantOrders: RequestHandler = async(req: Request, res: Response): Promise<void>=>{
+  try {
+    const restaurant = await Restaurant.findOne({user: req.userId})
+    if(!restaurant){
+     res.status(404).json({message:"restaurant not found"})
+     return
+    }
+    const orders = await Order.find({restaurant: restaurant._id})
+    .populate("restaurant")
+    .populate("user")
+
+    res.json(orders)
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message:"something went wrong"})
+  }
+}
+
+export const updateOrderStatus: RequestHandler = async(req: Request, res: Response) =>{
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const order = await Order.findById(orderId);
+    if(!order){
+      res.status(404).json({message: "order not found"})
+      return;
+    }
+
+    const restaurant = await Restaurant.findById(order.restaurant);
+
+    if(restaurant?.user?._id.toString() !== req.userId){
+     res. status(401).send()
+     return;
+    }
+
+    order.status = status;
+    await order.save();
+
+    res.status(200).json(order)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "Unable to update order status"})
+    
   }
 }
 
